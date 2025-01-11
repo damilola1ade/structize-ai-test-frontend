@@ -11,6 +11,7 @@ WORKDIR /app
 
 # Set production environment
 ENV NODE_ENV="production"
+ENV NEXT_PUBLIC_BACKEND_URL=https://structize-ai-backend.fly.dev
 
 
 # Throw-away build stage to reduce size of final image

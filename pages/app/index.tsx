@@ -10,7 +10,9 @@ type Response = {
   progress: number;
 };
 
-const socket = io("http://localhost:8000");
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+const socket = io(backendUrl);
 
 export default function App() {
   const [a, setA] = useState<number | undefined>();
@@ -28,7 +30,7 @@ export default function App() {
     setResults([]);
 
     try {
-      await fetch("http://localhost:8000/compute", {
+      await fetch(`${backendUrl}/compute`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
