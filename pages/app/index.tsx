@@ -66,7 +66,7 @@ export default function App() {
   console.log(results);
 
   return (
-    <main className="container min-h-screen px-4 flex flex-col justify-center items-center tracking-tight text-sm">
+    <main className="container min-h-screen mx-auto px-4 flex flex-col justify-center items-center tracking-tight text-sm">
       <h1 className="text-center text-lg font-bold">Basic Queue App</h1>
       <div className="mt-5 flex flex-col gap-12 justify-center items-center">
         <form
