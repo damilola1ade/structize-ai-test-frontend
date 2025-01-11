@@ -93,7 +93,7 @@ export default function App() {
                 required: "Provide the second number",
                 pattern: {
                   value: /^-?\d+$/,
-                  message: "Number A must be a valid number (e.g., -12, 34)",
+                  message: "Number B must be a valid number (e.g., -12, 34)",
                 },
               })}
             />
