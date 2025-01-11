@@ -2,13 +2,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useState, useEffect } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import io from "socket.io-client";
-
-type Response = {
-  jobType: string;
-  result: number;
-  progress: number;
-};
+import { ErrorText } from "@/components/ui/error-text";
+import { FormData, Response } from "@/types";
 
 const backendUrl =
   process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -16,8 +13,11 @@ const backendUrl =
 const socket = io(backendUrl);
 
 export default function App() {
-  const [a, setA] = useState<number | "">(0);
-  const [b, setB] = useState<number | "">(0);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
   const [progress, setProgress] = useState<number>(0);
   const [results, setResults] = useState<Response[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -25,7 +25,10 @@ export default function App() {
 
   const jobs: string[] = ["A + B", "A - B", "A * B", "A / B"];
 
-  const handleCompute = async () => {
+  const handleCompute: SubmitHandler<FormData> = async (formData) => {
+    const a = Number(formData.a);
+    const b = Number(formData.b);
+
     setLoading(true);
     setProgress(0);
     setResults([]);
@@ -37,12 +40,12 @@ export default function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ a: Number(a), b: Number(b) }),
+        body: JSON.stringify({ a, b }),
       });
 
       console.log("Compute request sent");
 
-      socket.emit("compute", { a: Number(a), b: Number(b) });
+      socket.emit("compute", { a, b });
     } catch (error) {
       console.error(error);
     }
@@ -66,45 +69,49 @@ export default function App() {
     <main className="container min-h-screen px-4 flex flex-col justify-center items-center tracking-tight text-sm">
       <h1 className="text-center text-lg font-bold">Basic Queue App</h1>
       <div className="mt-5 flex flex-col gap-12 justify-center items-center">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-          <Input
-            placeholder="Enter number A"
-            value={a === 0 ? "" : a}
-            type="number"
-            onChange={(e) => {
-              const value = e.target.value;
-              // Validate input: Allow only numeric values and prevent leading zeros
-              if (/^\d*$/.test(value)) {
-                setA(value === "" ? "" : Number(value));
-              }
-            }}
-          />
-          <Input
-            placeholder="Enter number B"
-            value={b === 0 ? "" : b}
-            type="number"
-            onChange={(e) => {
-              const value = e.target.value;
-              // Validate input: Allow only numeric values and prevent leading zeros
-              if (/^\d*$/.test(value)) {
-                setB(value === "" ? "" : Number(value));
-              }
-            }}
-          />
-
+        <form
+          onSubmit={handleSubmit(handleCompute)}
+          className="grid grid-cols-2 md:grid-cols-3 gap-5"
+        >
+          <div>
+            <Input
+              placeholder="Enter number A"
+              {...register("a", {
+                required: "Provide the first number",
+                pattern: {
+                  value: /^-?\d+$/,
+                  message: "Number A must be a valid number (e.g., -12, 34)",
+                },
+              })}
+            />
+            {errors.a && <ErrorText message={errors.a.message} />}
+          </div>
+          <div>
+            <Input
+              placeholder="Enter number B"
+              {...register("b", {
+                required: "Provide the second number",
+                pattern: {
+                  value: /^-?\d+$/,
+                  message: "Number A must be a valid number (e.g., -12, 34)",
+                },
+              })}
+            />
+            {errors.b && <ErrorText message={errors.b.message} />}
+          </div>
           <Button
-            onClick={handleCompute}
-            disabled={progress != 100 && loading}
+            type="submit"
+            disabled={progress !== 100 && loading}
             className="col-span-2 w-full md:col-span-1"
           >
             Compute
           </Button>
-        </div>
+        </form>
 
-        {loading ? (
+        {loading && (
           <div className="flex flex-col gap-3">
             <p className="text-center font-bold">
-              {progress != 100 && "Computing..."}
+              {progress !== 100 && "Computing..."}
               {completedJobs} out of 4 jobs finished
             </p>
             <Progress value={progress} className="w-[320px] md:w-[480px]" />
@@ -121,7 +128,7 @@ export default function App() {
               </ul>
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     </main>
   );
