@@ -1,16 +1,11 @@
-import { Geist } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import App from "./app";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const dmSans = DM_Sans({ subsets: ["latin"] });
 
 export default function Home() {
   return (
-    <div
-      className={`${geistSans.variable} font-[family-name:var(--font-geist-sans)]`}
-    >
+    <div className={`${dmSans} font-[family-name:var(--font-geist-sans)]`}>
       <App />
     </div>
   );

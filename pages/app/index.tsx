@@ -22,7 +22,7 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [completedJobs, setCompletedJobs] = useState<number>(0);
 
-  const jobs: string[] = ["A+B", "A-B", "A*B", "A/B"];
+  const jobs: string[] = ["A + B", "A - B", "A * B", "A / B"];
 
   const handleCompute = async () => {
     setLoading(true);
@@ -41,14 +41,12 @@ export default function App() {
 
       console.log("Compute request sent");
 
-      // Emit computation request to the server
       socket.emit("compute", { a: Number(a), b: Number(b) });
     } catch (error) {
       console.error(error);
     }
   };
 
-  // Listen for the results outside of the handleCompute to ensure it catches all emitted results
   useEffect(() => {
     socket.on("result", (data: Response) => {
       setResults((prevResults) => [...prevResults, data]);
@@ -57,7 +55,6 @@ export default function App() {
     });
 
     return () => {
-      // Clean up listener on component unmount
       socket.off("result");
     };
   }, []);
@@ -65,42 +62,50 @@ export default function App() {
   console.log(results);
 
   return (
-    <main className="container min-h-screen px-4 flex justify-center items-center">
-      <div className="flex flex-col gap-12 justify-center items-center">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <main className="container min-h-screen px-4 flex flex-col justify-center items-center tracking-tight text-sm">
+      <h1 className="text-center text-lg font-bold">Basic Queue App</h1>
+      <div className="mt-5 flex flex-col gap-12 justify-center items-center">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
           <Input
             placeholder="Enter number A"
-            type="number"
             value={a}
+            type="number"
             onChange={(e) => setA(Number(e.target.value))}
           />
           <Input
             placeholder="Enter number B"
-            type="number"
             value={b}
+            type="number"
             onChange={(e) => setB(Number(e.target.value))}
           />
-          <Button onClick={handleCompute} disabled={loading}>
+          <Button
+            onClick={handleCompute}
+            disabled={progress != 100 && loading}
+            className="col-span-2 w-full md:col-span-1"
+          >
             Compute
           </Button>
         </div>
 
         {loading ? (
           <div className="flex flex-col gap-3">
-            <p className="text-center">
-              Computing...{completedJobs} out of 4 jobs finished
+            <p className="text-center font-bold">
+              {progress != 100 && "Computing..."}
+              {completedJobs} out of 4 jobs finished
             </p>
-            <Progress value={progress} className="lg:w-[480px]" />
-            <ul className="">
-              {jobs.map((jobType, index) => {
-                const result = results.find((res) => res.jobType === jobType);
-                return (
-                  <li key={index}>
-                    {jobType} = {result ? result.result : "Computing"}
-                  </li>
-                );
-              })}
-            </ul>
+            <Progress value={progress} className="w-[320px] md:w-[480px]" />
+            <div className="flex justify-center">
+              <ul>
+                {jobs.map((jobType, index) => {
+                  const result = results.find((res) => res.jobType === jobType);
+                  return (
+                    <li key={index}>
+                      {jobType} = {result ? result.result : "Computing..."}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
         ) : null}
       </div>
