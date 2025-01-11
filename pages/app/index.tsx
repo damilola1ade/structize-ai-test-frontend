@@ -10,7 +10,8 @@ type Response = {
   progress: number;
 };
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+const backendUrl =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 const socket = io(backendUrl);
 
@@ -70,14 +71,27 @@ export default function App() {
             placeholder="Enter number A"
             value={a === 0 ? "" : a}
             type="number"
-            onChange={(e) => setA(Number(e.target.value))}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Validate input: Allow only numeric values and prevent leading zeros
+              if (/^\d*$/.test(value)) {
+                setA(value === "" ? "" : Number(value));
+              }
+            }}
           />
           <Input
             placeholder="Enter number B"
             value={b === 0 ? "" : b}
             type="number"
-            onChange={(e) => setB(Number(e.target.value))}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Validate input: Allow only numeric values and prevent leading zeros
+              if (/^\d*$/.test(value)) {
+                setB(value === "" ? "" : Number(value));
+              }
+            }}
           />
+
           <Button
             onClick={handleCompute}
             disabled={progress != 100 && loading}
