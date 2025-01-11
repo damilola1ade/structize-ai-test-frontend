@@ -68,13 +68,13 @@ export default function App() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
           <Input
             placeholder="Enter number A"
-            value={a}
+            value={a === 0 ? "" : a}
             type="number"
             onChange={(e) => setA(Number(e.target.value))}
           />
           <Input
             placeholder="Enter number B"
-            value={b}
+            value={b === 0 ? "" : b}
             type="number"
             onChange={(e) => setB(Number(e.target.value))}
           />
