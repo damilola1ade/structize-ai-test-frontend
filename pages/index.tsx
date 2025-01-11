@@ -1,5 +1,5 @@
 import { Geist } from "next/font/google";
-import Link from "next/link";
+import App from "./app";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -11,7 +11,7 @@ export default function Home() {
     <div
       className={`${geistSans.variable} font-[family-name:var(--font-geist-sans)]`}
     >
-      <Link href="/app">App</Link>
+      <App />
     </div>
   );
 }

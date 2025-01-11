@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import io from "socket.io-client";
 
 type Response = {
@@ -28,6 +28,7 @@ export default function App() {
     setLoading(true);
     setProgress(0);
     setResults([]);
+    setCompletedJobs(0);
 
     try {
       await fetch(`${backendUrl}/compute`, {
@@ -40,17 +41,26 @@ export default function App() {
 
       console.log("Compute request sent");
 
+      // Emit computation request to the server
       socket.emit("compute", { a: Number(a), b: Number(b) });
-
-      socket.on("result", (data: Response) => {
-        setResults((prevResults) => [...prevResults, data]);
-        setProgress((prevProgress) => prevProgress + data.progress);
-        setCompletedJobs((prev) => prev + 1);
-      });
     } catch (error) {
       console.error(error);
     }
   };
+
+  // Listen for the results outside of the handleCompute to ensure it catches all emitted results
+  useEffect(() => {
+    socket.on("result", (data: Response) => {
+      setResults((prevResults) => [...prevResults, data]);
+      setProgress((prevProgress) => prevProgress + data.progress);
+      setCompletedJobs((prev) => prev + 1);
+    });
+
+    return () => {
+      // Clean up listener on component unmount
+      socket.off("result");
+    };
+  }, []);
 
   console.log(results);
 
