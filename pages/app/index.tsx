@@ -15,8 +15,8 @@ const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const socket = io(backendUrl);
 
 export default function App() {
-  const [a, setA] = useState<number | undefined>();
-  const [b, setB] = useState<number | undefined>();
+  const [a, setA] = useState<number | "">(0);
+  const [b, setB] = useState<number | "">(0);
   const [progress, setProgress] = useState<number>(0);
   const [results, setResults] = useState<Response[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
