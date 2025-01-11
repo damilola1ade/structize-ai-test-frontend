@@ -1,5 +1,5 @@
 import { DM_Sans } from "next/font/google";
-import App from "./app";
+import { App } from "@/components/app";
 
 const dmSans = DM_Sans({ subsets: ["latin"] });
 

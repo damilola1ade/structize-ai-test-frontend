@@ -1,9 +1,9 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import io from "socket.io-client";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { ErrorText } from "@/components/ui/error-text";
 import { FormData, Response } from "@/types";
 
@@ -12,7 +12,7 @@ const backendUrl =
 
 const socket = io(backendUrl);
 
-export default function App() {
+export const App = () => {
   const {
     register,
     handleSubmit,
@@ -132,4 +132,4 @@ export default function App() {
       </div>
     </main>
   );
-}
+};
